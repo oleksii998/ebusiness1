@@ -36,7 +36,4 @@ class UserLogsRepository @Inject()(databaseConfigProvider: DatabaseConfigProvide
 
   private def toModel(dto: UserLog): UserEntry =
     UserEntry(dto.id, LoginInfo(dto.providerId, dto.providerKey), dto.email)
-
-  private def toDto(model: UserEntry): UserLog =
-    UserLog(model.id, model.loginInfo.providerID, model.loginInfo.providerKey, model.email)
 }

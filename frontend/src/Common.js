@@ -33,7 +33,7 @@ export const getExistingData = (fetchedData, existingDataIndex) => {
 };
 
 export const calculatePrice = (promotions, product) => {
-    const promotion = promotions.find(promotion => promotion.product.id === product.id);
+    const promotion = promotions.find(promo => promo.product.id === product.id);
     let price = product.price;
     if(promotion) {
         if(promotion.promotion.promotionType === 0) {

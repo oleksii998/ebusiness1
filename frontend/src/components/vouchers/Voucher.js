@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {getUserUri, removeUser, removeVoucher} from "../../Rest";
+import {removeVoucher} from "../../Rest";
 import {sendForm} from "../../Common";
 
 const Voucher = (props) => {

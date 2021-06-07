@@ -1,9 +1,3 @@
-import {useParams} from "react-router-dom";
-import {useState} from "react";
-import {removeBonusCard} from "../../Rest";
-import {messages} from "../../Constants";
-import {sendForm} from "../../Common";
-
 const Transaction = (props) => {
     return (
         <div>

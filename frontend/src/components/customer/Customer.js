@@ -1,8 +1,6 @@
-import {useState} from "react";
 import User from "../user/User";
 
 const Customer = (props) => {
-    const [state, setState] = useState(null);
     return (
         <>
             <User fetchedData={props.fetchedData} isCustomer={true}/>
