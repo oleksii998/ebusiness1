@@ -12,7 +12,8 @@ RUN wget https://dl.bintray.com/sbt/debian/sbt-1.4.9.deb && dpkg -i sbt-1.4.9.de
 COPY --chown=${USER} . ${WORKING_DIR}
 USER ${USER}
 WORKDIR ${WORKING_DIR}
+RUN sbt stage
 
 VOLUME ["${WORKING_DIR}"]
 
-EXPOSE 80
+EXPOSE 9000
