@@ -1,3 +1,5 @@
+const CSRF_TOKEN = "csrfToken";
+
 export const sendForm = (restFunc, respCallback, errCallback) => {
     restFunc()
         .then(response => respCallback(response))
@@ -44,4 +46,21 @@ export const calculatePrice = (promotions, product) => {
         price = <>{price.toFixed(2)} (<s>{parseFloat(promotion.product.price).toFixed(2)}</s>)</>
     }
     return price;
+};
+
+export const tryExtractAndSaveCsrfToken = () => {
+    const csrfToken = getUrlParam(CSRF_TOKEN);
+    if(csrfToken) {
+        sessionStorage.setItem(CSRF_TOKEN, csrfToken);
+        return true;
+    }
+    return false;
+};
+
+export const getCsrfToken = () => {
+    return sessionStorage.getItem(CSRF_TOKEN);
+};
+
+export const getUrlParam = (name) => {
+    return new URLSearchParams(window.location.search).get(name);
 };

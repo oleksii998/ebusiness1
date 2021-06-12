@@ -42,6 +42,7 @@ import Promotions from "./components/promotions/Promotions";
 import {useReducer, useEffect} from "react";
 import {initialState, Reducer, PromotionContext} from "./components/Reducer";
 import AuthenticationHandler from "./components/user/AuthenticationHandler";
+import PostAuth from "./components/user/PostAuth";
 
 function App() {
     const [promotionState, dispatchPromotion] = useReducer(Reducer, initialState);
@@ -190,6 +191,9 @@ function App() {
                     </Route>
                     <Route exact path="/log-in">
                         <AuthenticationHandler/>
+                    </Route>
+                    <Route exact path="/post-auth">
+                        <PostAuth/>
                     </Route>
                 </Switch>
             </div>

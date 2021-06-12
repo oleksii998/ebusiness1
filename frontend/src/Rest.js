@@ -1,6 +1,7 @@
 import axios from "axios";
+import {getCsrfToken} from "./Common";
 
-const serverUrl = "http://localhost:9000";
+const serverUrl = "https://ebusiness-backend.azurewebsites.net";
 export const authUrl = `${serverUrl}/authentication`;
 const usersUri = "users";
 const customersUri = "customers";
@@ -16,7 +17,7 @@ const transactionsUri = "transactions";
 axios.interceptors.request.use(
     function(config) {
         config.withCredentials = true;
-        config.headers["Csrf-Token"] = getCookie("csrfToken");
+        config.headers["Csrf-Token"] = getCsrfToken();
         return config;
     },
     function(error) {
@@ -208,8 +209,3 @@ export const addTransaction = (transactionData) => {
 export const logOut = () => {
     return axios.post(`${serverUrl}/authentication/log-out`);
 };
-
-const getCookie = (name) => {
-    const cookies = document.cookie.split(";");
-    return cookies.find(cookie => cookie.includes(name))?.split("=")[1] || "";
-}
