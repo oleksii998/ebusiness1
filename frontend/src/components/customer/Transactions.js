@@ -6,7 +6,7 @@ const Transactions = (props) => {
     const rows = props.fetchedData[0].map((transaction) => {
         return {
             id: transaction.id,
-            columnValues: [transaction.id, transaction.orderId, transaction.finalPrice, transaction.status === 0 ? "Successful" : "Faulty"]
+            columnValues: [transaction.id, transaction.orderId, transaction.finalPrice, transaction.status === 0 ? "Completed" : "Failed"]
         }
     });
 

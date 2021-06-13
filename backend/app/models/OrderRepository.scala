@@ -27,7 +27,7 @@ class OrderRepository @Inject()(voucherRepository: VoucherRepository, databaseCo
           if (cartEntry.promotion.get.promotionType == PromotionType.PERCENTAGE) {
             discount = cartEntry.product.price * discount
           }
-          discount
+          discount * cartEntry.quantity
         } else {
           0d
         }
@@ -52,7 +52,13 @@ class OrderRepository @Inject()(voucherRepository: VoucherRepository, databaseCo
         (order, id) => order.copy(id = id)
         )) += Order(0, createOrderForm.customerId, price, promotionsDiscount, voucherDiscount, OrderStatus.PLACED, active = true)).asTry).map {
         case Success(order) =>
-          cartRepository.addOrderIdForCustomerCart(createOrderForm.customerId, order.id)
+          var orderId = order.id
+          val modifyingOrders = Await.result(getAllForCustomer(createOrderForm.customerId), Duration.Inf).filter(order => order.status.equals(OrderStatus.BEING_MODIFIED))
+          if (modifyingOrders.nonEmpty) {
+            orderId = modifyingOrders.head.id
+            Await.result(remove(orderId), Duration.Inf)
+          }
+          cartRepository.addOrderIdForCustomerCart(createOrderForm.customerId, order.id, orderId)
           Try.apply(order)
         case Failure(error) => Failure(error)
       }
@@ -82,10 +88,16 @@ class OrderRepository @Inject()(voucherRepository: VoucherRepository, databaseCo
   }
 
   def modify(id: Long, modifyOrderForm: ModifyOrderForm): Future[Future[Future[Try[Int]]]] = {
+    val customerOrders = Await.result(getAllForCustomer(modifyOrderForm.customerId), Duration.Inf).filter(x => x.status.equals(OrderStatus.BEING_MODIFIED))
+    val customerCartEntries = Await.result(cartRepository.getAllForCustomer(modifyOrderForm.customerId), Duration.Inf)
     get(id).map {
       case Some(order) =>
         if (order.status.equals(OrderStatus.DELIVERED)) {
           Future.successful(Future.successful(Failure(new RuntimeException("Cannot modify already delivered order"))))
+        } else if (modifyOrderForm.status.equals(OrderStatus.BEING_MODIFIED) && customerOrders.nonEmpty) {
+          Future.successful(Future.successful(Failure(new RuntimeException("Cannot modify more than one order at a time"))))
+        } else if (modifyOrderForm.status.equals(OrderStatus.BEING_MODIFIED) && customerCartEntries.nonEmpty) {
+          Future.successful(Future.successful(Failure(new RuntimeException("Cannot modify order because shopping cart is not empty"))))
         } else {
           calcDiscount(id, modifyOrderForm, order)
         }
@@ -142,7 +154,6 @@ class OrderRepository @Inject()(voucherRepository: VoucherRepository, databaseCo
       }
       db.run(orders.filter(_.id === id).update(order.copy(price = price, promotionsDiscount = promotionsDiscount, voucherDiscount = voucherDiscount, status = modifyOrderForm.status)).asTry).map {
         case Success(result) =>
-          cartRepository.addOrderIdForCustomerCart(order.customerId, order.id)
           Try.apply(result)
         case Failure(error) => Failure(error)
       }

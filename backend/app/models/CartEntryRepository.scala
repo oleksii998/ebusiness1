@@ -80,8 +80,9 @@ class CartRepository @Inject()(databaseConfigProvider: DatabaseConfigProvider)(i
     })
   }
 
-  def addOrderIdForCustomerCart(customerId: Long, orderId: Long): Future[Try[Int]] = {
-    db.run(cart.filter(_.customerId === customerId).map(cartEntry => cartEntry.orderId).update(Option.apply(orderId)).transactionally.asTry)
+  def addOrderIdForCustomerCart(customerId: Long, orderId: Long, prevOrderId: Long): Future[Try[Int]] = {
+    db.run(cart.filter(cartEntry => cartEntry.customerId === customerId && (cartEntry.orderId.column.isEmpty || cartEntry.orderId === prevOrderId))
+      .map(cartEntry => cartEntry.orderId).update(Option.apply(orderId)).transactionally.asTry)
   }
 
   def remove(id: Long): Future[Try[Int]] = db.run(

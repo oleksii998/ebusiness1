@@ -1,6 +1,7 @@
 import {useState, useEffect, createElement} from "react";
 import {useParams} from "react-router-dom";
 import {messages} from "../../Constants";
+import {isString} from "../../Common";
 
 const ServerData = (props) => {
     const [state, setState] = useState({
@@ -22,7 +23,7 @@ const ServerData = (props) => {
             }
         }).catch(error => {
             setState({
-                content: <p>{error.response?.data?.message || messages.serverError}</p>
+                content: <p>{error.response?.data?.message || (isString(error.response?.data) ? error.response?.data : messages.serverError)}</p>
             });
         }))
     }, [props.wrapper]);

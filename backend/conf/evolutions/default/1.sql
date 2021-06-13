@@ -135,7 +135,7 @@ create table if not exists Orders
     "price"       integer not null,
     "promotions_discount"       double  not null,
     "voucher_discount"         double  not null,
-    "state"       varchar not null,
+    "status"       varchar not null,
     "active"      bool    not null,
     foreign key (customer_id) references Customers(id)
 );

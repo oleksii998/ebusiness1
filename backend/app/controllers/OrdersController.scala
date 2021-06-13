@@ -32,7 +32,8 @@ class OrdersController @Inject()(orderRepository: OrderRepository,
         status.equals(OrderStatus.PLACED) ||
           status.equals(OrderStatus.BEING_MODIFIED) ||
           status.equals(OrderStatus.DELIVERED)),
-      "voucherId" -> optional(longNumber)
+      "voucherId" -> optional(longNumber),
+      "customerId" -> longNumber
     )(ModifyOrderForm.apply)(ModifyOrderForm.unapply)
   }
 
@@ -127,7 +128,7 @@ class OrdersController @Inject()(orderRepository: OrderRepository,
     orderRepository.get(id).map {
       case Some(order) =>
         val filled = modifyOrderForm.fill(ModifyOrderForm(order.status,
-          Option.empty))
+          Option.empty, order.customerId))
         val vouchers = Await.result(voucherRepository.getAll, Duration.Inf)
         Ok(views.html.orders.orderModify(filled, order.id, vouchers))
       case None => BadRequest("Order not found")
@@ -160,4 +161,4 @@ class OrdersController @Inject()(orderRepository: OrderRepository,
 
 case class CreateOrderForm(customerId: Long, voucherId: Option[Long])
 
-case class ModifyOrderForm(status: OrderStatus, voucherId: Option[Long])
+case class ModifyOrderForm(status: OrderStatus, voucherId: Option[Long], customerId: Long)

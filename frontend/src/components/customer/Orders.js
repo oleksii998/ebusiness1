@@ -2,11 +2,11 @@ import {useParams} from "react-router-dom";
 import Table from "../general/Table";
 
 const Orders = (props) => {
-    const header = ["Id", "Voucher discount", "Promotions discount", "Price", "Status"];
+    const header = ["Voucher discount", "Promotions discount", "Price", "Status"];
     const rows = props.fetchedData[0].map((cartEntry) => {
         return {
             id: cartEntry.id,
-            columnValues: [cartEntry.id, cartEntry.voucherDiscount, cartEntry.promotionsDiscount, cartEntry.price, cartEntry.status]
+            columnValues: [cartEntry.voucherDiscount, cartEntry.promotionsDiscount, cartEntry.price, cartEntry.status]
         }
     });
 

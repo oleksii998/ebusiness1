@@ -12,7 +12,7 @@ const VoucherForm = (props) => {
         return 1;
     };
     const calcStep = () => {
-        return existingData?.voucherType === 0 ? .01 : 1;
+        return existingData?.voucherType === 1 ? 1 : .01;
     };
     const [state, setState] = useState({
         name: existingData?.name || "",

@@ -18,7 +18,7 @@ const PostAuth = () => {
         if (state.done) {
             let content = <span>Something went wrong, please, try to <a href="/log-in">log in</a> again</span>;
             if(state.success) {
-                content = <span>You can now return to <a href="/">main</a></span>;
+                content = <span>You are logged in.<br/><a href="/">Go to main</a></span>;
             }
             return content;
         }

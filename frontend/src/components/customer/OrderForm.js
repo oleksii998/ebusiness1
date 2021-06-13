@@ -20,9 +20,8 @@ const OrderForm = (props) => {
         }
         if (existingData) {
             data.status = state.status;
-        } else {
-            data.customerId = params.id;
         }
+        data.customerId = params.id;
         return data;
     }
     const getFormContents = () => {

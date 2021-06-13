@@ -64,3 +64,7 @@ export const getCsrfToken = () => {
 export const getUrlParam = (name) => {
     return new URLSearchParams(window.location.search).get(name);
 };
+
+export const isString = (obj) => {
+    return obj !== undefined && obj !== null && typeof obj === "string";
+};

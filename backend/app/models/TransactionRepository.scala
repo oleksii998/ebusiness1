@@ -1,11 +1,12 @@
 package models
 
-import controllers.{CreateTransactionForm, ModifyTransactionForm}
+import controllers.{CreateTransactionForm, ModifyOrderForm, ModifyTransactionForm}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.lifted.TableQuery
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Try}
 
@@ -21,13 +22,18 @@ class TransactionRepository @Inject()(orderRepository: OrderRepository, database
   def add(createTransactionForm: CreateTransactionForm): Future[Future[Try[Transaction]]] = {
     orderRepository.get(createTransactionForm.orderId).map {
       case Some(order) =>
-        val finalPrice = order.price - order.promotionsDiscount - order.voucherDiscount
-        db.run(((transactions returning transactions.map(_.id) into (
-          (transaction, id) => transaction.copy(id = id)
-          )) += Transaction(0, createTransactionForm.orderId,
-          finalPrice,
-          TransactionStatus.COMPLETED,
-          active = true)).asTry)
+        if (order.status.equals(OrderStatus.DELIVERED)) {
+          Future.successful(Failure(new RuntimeException("Transaction is already processed")))
+        } else {
+          val finalPrice = order.price - order.promotionsDiscount - order.voucherDiscount
+          Await.result(orderRepository.modify(order.id, ModifyOrderForm(OrderStatus.DELIVERED, Option.empty, order.customerId)), Duration.Inf)
+          db.run(((transactions returning transactions.map(_.id) into (
+            (transaction, id) => transaction.copy(id = id)
+            )) += Transaction(0, createTransactionForm.orderId,
+            finalPrice,
+            TransactionStatus.COMPLETED,
+            active = true)).asTry)
+        }
       case None => Future.successful(Failure(new RuntimeException("Could not find order " + createTransactionForm.orderId)))
     }
   }
