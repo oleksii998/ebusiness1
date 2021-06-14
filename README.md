@@ -21,7 +21,7 @@ https://hub.docker.com/repository/docker/oleksii998/ebusiness-frontend
 Both applications have been deployed on azure cloud and are available at the following addresses:
 - backend -
 `
-https://ebusiness-frontend.azurewebsites.net/
+https://ebusiness-backend.azurewebsites.net/
 `
 - frontend -
 `
